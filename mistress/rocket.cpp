@@ -45,7 +45,7 @@ void Rocket::animate(long ticks)
 	_pos += _vel * ticks;
 
 	auto iv = NumLedsPerTrack * 1024 / 2;
-	auto pf = max(0, _pos / 1024 - iv);
+	auto pf = max((long) 0, _pos / 1024 - iv);
 	auto df = iv - pf;
 	_current_hsv.s = (long) (_init_hsv.s * pf) / iv + (long) (_max_hsv.s * df) / iv;
 	_current_hsv.v = (long) (_init_hsv.v * pf) / iv + (long) (_max_hsv.v * df) / iv;

@@ -1,0 +1,7 @@
+{
+	"default_arguments": [
+		"-ocols=`tput cols`",
+		"-orows=`tput lines`",
+		"-orun_args='{cols} {rows}'"
+	]
+}

@@ -1,11 +1,37 @@
 #ifdef ARDUINO
 #include <FastLED.h>
-const int LED_PIN = 5;
+
+const int LED_S1 = 13;
+const int LED_S2 = 27;
+const int LED_S3 = 26;
+const int LED_S4 = 25;
+const int LED_S5 = 33;
+const int LED_S6 = 32;
+
 #else
 #include <iostream>
 #include <iomanip>
 #include "system.h"
 #endif
+
+
+/* For DOIT ESP32 DEVKIT V1   (ESP32-VROOM-32D 30-pin layout)
+ * EN
+ * SENSOR VP
+ * SENSOR VN
+ * 34
+ * 35
+ * 32  - strip 6
+ * 33  - strip 5
+ * 25  - strip 4
+ * 26  - strip 3
+ * 27  - strip 2
+ * 14
+ * 12
+ * 13  - strip 1
+ * GND - ground to board
+ * 5V  - 5V to src
+*/
 
 // Hardware setup
 

@@ -36,8 +36,8 @@ Segment segments[NUM_SEGMENTS];
 void setup()
 {
   // Set up the FastLED array.
-  FastLED.addLeds<WS2811, LED_S1, GRB>(frame_buffer, METERS_PER_STRIP);
-  memset(frame_buffer, 0, sizeof(CRGB) * METERS_PER_STRIP);
+  FastLED.addLeds<WS2811, LED_S1, GRB>(frame_buffer, LEDS_PER_STRIP);
+  memset(frame_buffer, 0, sizeof(CRGB) * LEDS_PER_STRIP);
 
   // Initialize the timing.
   current_time = millis();
@@ -52,6 +52,7 @@ void setup()
   }
 }
 
+// This just blinks the microcontroller's on-board LED.
 void animate_on_board_led()
 {
   // TODO: blink the LED pin
@@ -103,11 +104,29 @@ void animate_strip()
     // During the 'duration', this loop will iterate zero times. Nothing wrong with that.
     for (led_idx = 0; led_idx < num_new_color_leds; ++led_idx)
     {
-      frame_buffer[first_led_index + led_idx] = segment[seg].colors_[NEW_COLOR];
+      // Where in the patch we are painting.
+      int idx_mod = first_led_index + led_idx;
+      // Reverse direction on a random condition.
+      if (transition_end_time % 2 == 1)
+      {
+        // Counting down from the end of the path to the beginning.
+        idx_mod = (first_led_index + LEDS_PER_SEGMENT - 1) - idx_mod;
+      }
+      // Paint the color.
+      frame_buffer[idx_mod] = segment[seg].colors_[NEW_COLOR];
     }
     for (led_idx = num_new_color_leds; led_idx < LEDS_PER_SEGMENT; ++led_idx)
     {
-      frame_buffer[first_led_index + led_idx] = segment[seg].colors_[OLD_COLOR];
+      // Where in the patch we are painting.
+      int idx_mod = first_led_index + led_idx;
+      // Reverse direction on a random condition.
+      if (transition_end_time % 2 == 1)
+      {
+        // Counting down from the end of the path to the beginning.
+        idx_mod = (first_led_index + LEDS_PER_SEGMENT - 1) - idx_mod;
+      }
+      // Paint the color.
+      frame_buffer[idx_mod] = segment[seg].colors_[OLD_COLOR];
     }
 
     // If the segment has fully transitioned, set it up for the next transition.

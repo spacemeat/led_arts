@@ -1,9 +1,12 @@
 #include <FastLED.h>
 
+// ----- Pinouts
+const int LED_STRIP0 = 13;
+
 // ----- Frame buffer setup -----
 const int LEDS_PER_METER = 60;
 const int METERS_PER_STRIP = 5;
-const int LEDS_PER_STRIP = LEDS_PER_METER * METERS_PER_STRIPj;
+const int LEDS_PER_STRIP = LEDS_PER_METER * METERS_PER_STRIP;
 CRGB frame_buffer[LEDS_PER_STRIP];
 
 // ----- Timing setup -----
@@ -36,7 +39,7 @@ Segment segments[NUM_SEGMENTS];
 void setup()
 {
   // Set up the FastLED array.
-  FastLED.addLeds<WS2811, LED_S1, GRB>(frame_buffer, LEDS_PER_STRIP);
+  FastLED.addLeds<WS2812B, LED_STRIP0, GRB>(frame_buffer, LEDS_PER_STRIP);
   memset(frame_buffer, 0, sizeof(CRGB) * LEDS_PER_STRIP);
 
   // Initialize the timing.
@@ -81,7 +84,7 @@ void animate_strip()
   // Draw colors for each segment into the frame buffer.
   for (int seg = 0; seg < NUM_SEGMENTS; ++seg)
   {
-    long transition_start_time = segments[seg].transition_time_;
+    long transition_start_time = segments[seg].transition_start_time_;
     long transition_end_time = transition_start_time + TRANSITION_DURATION;
 
     int num_new_color_leds = 0;
@@ -102,7 +105,7 @@ void animate_strip()
     // Each segment starts at a particular place in the frame buffer.
     int first_led_index = LEDS_PER_SEGMENT * seg;
     // During the 'duration', this loop will iterate zero times. Nothing wrong with that.
-    for (led_idx = 0; led_idx < num_new_color_leds; ++led_idx)
+    for (int led_idx = 0; led_idx < num_new_color_leds; ++led_idx)
     {
       // Where in the patch we are painting.
       int idx_mod = first_led_index + led_idx;
@@ -113,9 +116,9 @@ void animate_strip()
         idx_mod = (first_led_index + LEDS_PER_SEGMENT - 1) - idx_mod;
       }
       // Paint the color.
-      frame_buffer[idx_mod] = segment[seg].colors_[NEW_COLOR];
+      frame_buffer[idx_mod] = segments[seg].colors_[NEW_COLOR];
     }
-    for (led_idx = num_new_color_leds; led_idx < LEDS_PER_SEGMENT; ++led_idx)
+    for (int led_idx = num_new_color_leds; led_idx < LEDS_PER_SEGMENT; ++led_idx)
     {
       // Where in the patch we are painting.
       int idx_mod = first_led_index + led_idx;
@@ -126,18 +129,18 @@ void animate_strip()
         idx_mod = (first_led_index + LEDS_PER_SEGMENT - 1) - idx_mod;
       }
       // Paint the color.
-      frame_buffer[idx_mod] = segment[seg].colors_[OLD_COLOR];
+      frame_buffer[idx_mod] = segments[seg].colors_[OLD_COLOR];
     }
 
     // If the segment has fully transitioned, set it up for the next transition.
     if (current_time > transition_end_time)
     {
       // The old color becomes the new color.
-      segment[seg].colors_[0] = segment[seg].colors_[1];
+      segments[seg].colors_[0] = segments[seg].colors_[1];
       // The new color becomes a pseudorandom color.
-      segment[seg].colors_[1] = make_random_color();
+      segments[seg].colors_[1] = make_random_color();
       // The next transition occurs between the min an max color durations.
-      segment[seg].transition_start_time_ = make_random_duration();
+      segments[seg].transition_start_time_ = make_random_duration();
     }
   }
 

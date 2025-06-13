@@ -1,9 +1,12 @@
 #include <FastLED.h>
 
+// ----- Pinouts
+const int LED_STRIP0 = 13;
+
 // ----- Frame buffer setup -----
 const int LEDS_PER_METER = 60;
 const int METERS_PER_STRIP = 5;
-const int LEDS_PER_STRIP = LEDS_PER_METER * METERS_PER_STRIPj;
+const int LEDS_PER_STRIP = LEDS_PER_METER * METERS_PER_STRIP;
 CRGB frame_buffer[LEDS_PER_STRIP];
 
 int starting_led_idx = 0;
@@ -12,7 +15,7 @@ int starting_led_idx = 0;
 void setup()
 {
   // Set up the FastLED array.
-  FastLED.addLeds<WS2811, LED_S1, GRB>(frame_buffer, LEDS_PER_STRIP);
+  FastLED.addLeds<WS2812B, LED_STRIP0, GRB>(frame_buffer, LEDS_PER_STRIP);
   memset(frame_buffer, 0, sizeof(CRGB) * LEDS_PER_STRIP);
 }
 
@@ -33,9 +36,6 @@ void animate_strip()
 // This is called likely more than every 30th of a second.
 void loop()
 {
-  // Blink the on-board LED, to indicate that no matter what the strip is
-  // doing, we can see that the loop is running.
-  animate_on_board_led();
   // Animate the LED strip itself by filling in the frame buffer with new
   // CRGB color values.
   animate_strip();

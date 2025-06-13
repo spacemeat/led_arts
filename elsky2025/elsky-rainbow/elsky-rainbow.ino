@@ -1,9 +1,12 @@
 #include <FastLED.h>
 
+// ----- Pinouts
+const int LED_STRIP0 = 13;
+
 // ----- Frame buffer setup -----
 const int LEDS_PER_METER = 60;
 const int METERS_PER_STRIP = 5;
-const int LEDS_PER_STRIP = LEDS_PER_METER * METERS_PER_STRIPj;
+const int LEDS_PER_STRIP = LEDS_PER_METER * METERS_PER_STRIP;
 CRGB frame_buffer[LEDS_PER_STRIP];
 
 // ----- Timing setup -----
@@ -16,7 +19,7 @@ const int FRAME_DURATION = 1000 / 30;
 void setup()
 {
   // Set up the FastLED array.
-  FastLED.addLeds<WS2811, LED_S1, GRB>(frame_buffer, LEDS_PER_STRIP);
+  FastLED.addLeds<WS2812B, LED_STRIP0, GRB>(frame_buffer, LEDS_PER_STRIP);
   memset(frame_buffer, 0, sizeof(CRGB) * LEDS_PER_STRIP);
 
   // Initialize the timing.

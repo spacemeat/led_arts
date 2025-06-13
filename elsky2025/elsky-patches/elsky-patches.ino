@@ -1,7 +1,15 @@
 #include <FastLED.h>
 
+#ifdef DEBUG
+#define S_PRINT(str)    Serial.print(str)
+#define S_PRINTLN(str)  Serial.println(str)
+#else
+#define S_PRINT(str)    
+#define S_PRINTLN(str)  
+#endif
+
 // ----- Pinouts
-const int LED_STRIP0 = 13;
+const int LED_STRIP0 = 14;
 
 // ----- Frame buffer setup -----
 const int LEDS_PER_METER = 60;
@@ -38,6 +46,8 @@ Segment segments[NUM_SEGMENTS];
 // This is called once when the board powers on.
 void setup()
 {
+  Serial.begin(9600);
+
   // Set up the FastLED array.
   FastLED.addLeds<WS2812B, LED_STRIP0, GRB>(frame_buffer, LEDS_PER_STRIP);
   memset(frame_buffer, 0, sizeof(CRGB) * LEDS_PER_STRIP);
@@ -51,21 +61,18 @@ void setup()
   for (int seg = 0; seg < NUM_SEGMENTS; ++seg)
   {
     segments[seg].colors_[OLD_COLOR] = CRGB(0, 0, 0);
-    segments[seg].colors_[OLD_COLOR] = make_random_color();
+    segments[seg].colors_[NEW_COLOR] = make_random_color();
+    segments[seg].transition_start_time_ = 0;
   }
-}
 
-// This just blinks the microcontroller's on-board LED.
-void animate_on_board_led()
-{
-  // TODO: blink the LED pin
+  S_PRINT("Num segments: "); S_PRINTLN(NUM_SEGMENTS);
 }
 
 // Returns a random color, within a range of saturation and at a particular brightness.
 CRGB make_random_color()
 {
   CHSV hsv(random(256),         // Anywhere on the hue wheel
-           random(127) + 128,   // Somewhere between half and full saturation
+           random(128) + 127,   // Somewhere between half and full saturation
            127);                // Always half brightness.
   return CRGB(hsv);
 }
@@ -81,11 +88,15 @@ long make_random_duration()
 // This is called every 30th of a second from loop().
 void animate_strip()
 {
+  Serial.println("animate_strip()");
   // Draw colors for each segment into the frame buffer.
   for (int seg = 0; seg < NUM_SEGMENTS; ++seg)
   {
+    S_PRINT("segment: "); S_PRINTLN(seg);
     long transition_start_time = segments[seg].transition_start_time_;
     long transition_end_time = transition_start_time + TRANSITION_DURATION;
+    S_PRINT("  transition_start_time: "); S_PRINTLN(transition_start_time);
+    S_PRINT("  transition_end_time: "); S_PRINTLN(transition_end_time);
 
     int num_new_color_leds = 0;
 
@@ -95,9 +106,10 @@ void animate_strip()
     {
       // Figure out the portion of the segment that gets drawn with new color.
       // This results in a float value from 0.0 - 1.0.
-      float portion = (transition_end_time - transition_start_time) / 
-            (current_time - transition_start_time);
+      float portion = float(current_time - transition_start_time ) / 
+            float(transition_end_time - transition_start_time);
       num_new_color_leds = portion * LEDS_PER_SEGMENT;
+      S_PRINT("  num_new_color_leds: "); S_PRINTLN(num_new_color_leds);
     }
 
     // Draw new colors, then old colors.
@@ -105,6 +117,7 @@ void animate_strip()
     // Each segment starts at a particular place in the frame buffer.
     int first_led_index = LEDS_PER_SEGMENT * seg;
     // During the 'duration', this loop will iterate zero times. Nothing wrong with that.
+    S_PRINT("  - old colors");
     for (int led_idx = 0; led_idx < num_new_color_leds; ++led_idx)
     {
       // Where in the patch we are painting.
@@ -115,9 +128,12 @@ void animate_strip()
         // Counting down from the end of the path to the beginning.
         idx_mod = (first_led_index + LEDS_PER_SEGMENT - 1) - idx_mod;
       }
+      S_PRINT("  idx_mod: "); S_PRINTLN(idx_mod);
+
       // Paint the color.
       frame_buffer[idx_mod] = segments[seg].colors_[NEW_COLOR];
     }
+    S_PRINTLN("  - new colors");
     for (int led_idx = num_new_color_leds; led_idx < LEDS_PER_SEGMENT; ++led_idx)
     {
       // Where in the patch we are painting.
@@ -128,6 +144,7 @@ void animate_strip()
         // Counting down from the end of the path to the beginning.
         idx_mod = (first_led_index + LEDS_PER_SEGMENT - 1) - idx_mod;
       }
+      S_PRINT("  idx_mod: "); S_PRINTLN(idx_mod);
       // Paint the color.
       frame_buffer[idx_mod] = segments[seg].colors_[OLD_COLOR];
     }
@@ -140,8 +157,9 @@ void animate_strip()
       // The new color becomes a pseudorandom color.
       segments[seg].colors_[1] = make_random_color();
       // The next transition occurs between the min an max color durations.
-      segments[seg].transition_start_time_ = make_random_duration();
+      segments[seg].transition_start_time_ += make_random_duration();
     }
+
   }
 
   // And that's it. We animated each segment, and so all the frame buffer's colors
@@ -177,9 +195,6 @@ void loop()
   // Delay until we're ready to animate the next frame. Should be no more 
   // than the frame duration (1/30 of a second).
   wait_for_time();
-  // Blink the on-board LED, to indicate that no matter what the strip is
-  // doing, we can see that the loop is running.
-  animate_on_board_led();
   // Animate the LED strip itself by filling in the frame buffer with new
   // CRGB color values.
   animate_strip();

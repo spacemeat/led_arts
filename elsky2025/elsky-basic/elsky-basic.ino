@@ -1,7 +1,7 @@
 #include <FastLED.h>
 
 // ----- Pinouts
-const int LED_STRIP0 = 13;
+const int LED_STRIP0 = 14;
 
 // ----- Frame buffer setup -----
 const int LEDS_PER_METER = 60;
@@ -28,7 +28,7 @@ void animate_strip()
   for (int led_count = 0; led_count < LEDS_PER_STRIP; ++led_count)
   {
     int led_idx = (starting_led_idx + led_count) % LEDS_PER_STRIP;
-    CHSV hsv { led_count, 255, (LEDS_PER_STRIP - led_count) % 127 };
+    CHSV hsv { max(255, led_count), 255, max(0, min(127, led_count - 127)) };
     frame_buffer[led_idx] = hsv;
   }
 }

@@ -1,7 +1,7 @@
 #include <FastLED.h>
 
 // ----- Pinouts
-const int LED_STRIP0 = 13;
+const int LED_STRIP0 = 14;
 
 // ----- Frame buffer setup -----
 const int LEDS_PER_METER = 60;
@@ -25,12 +25,6 @@ void setup()
   // Initialize the timing.
   current_time = millis();
   frame_time = current_time;
-}
-
-// This just blinks the microcontroller's on-board LED.
-void animate_on_board_led()
-{
-  // TODO: blink the LED pin
 }
 
 // This is called every 30th of a second from loop().
@@ -89,9 +83,6 @@ void loop()
   // Delay until we're ready to animate the next frame. Should be no more 
   // than the frame duration (1/30 of a second).
   wait_for_time();
-  // Blink the on-board LED, to indicate that no matter what the strip is
-  // doing, we can see that the loop is running.
-  animate_on_board_led();
   // Animate the LED strip itself by filling in the frame buffer with new
   // CRGB color values.
   animate_strip();

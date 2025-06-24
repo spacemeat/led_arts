@@ -6,10 +6,12 @@
 class Effect
 {
 public:
-    Effect();
+    Effect(Octopus const * octopus);
     virtual ~Effect();
-
     
+	virtual void animate(long ticks) = 0;
+private:
+	Octopus * _octopus;
 };
 
 #endif // #ifndef EFFECT_H

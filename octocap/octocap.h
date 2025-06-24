@@ -7,8 +7,8 @@ const int LED_S3 = 26;
 const int LED_S4 = 25;
 const int LED_S5 = 33;
 const int LED_S6 = 32;
-const int LED_S7 = ??;
-const int LED_S8 = ??;
+const int LED_S7 = 35;
+const int LED_S8 = 34;
 
 #else
 #include <iostream>
@@ -69,6 +69,7 @@ struct Tentacle
 	void render();
 
 	int _tentacle_id;
+	int _frame_buffer_start;
 };
 
 struct MantleBand
@@ -81,6 +82,7 @@ struct MantleBand
 	void render();
 
     int _band_id;
+	int _frame_buffer_start;
 };
 
 class Effect;

@@ -35,6 +35,9 @@ struct CHSV
 	u8 v = 0;
 };
 
+CHSV makeRandomColor();
+CHSV makeRandomColor(CHSV inContrastTo);
+
 struct CRGB
 {
 	CRGB()

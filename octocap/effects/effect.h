@@ -1,17 +1,20 @@
 #ifndef EFFECT_H
 #define EFFECT_H
 
-#include "octocap.h"
+#include "effect_controller.h"
+#include "../octocap.h"
 
 class Effect
 {
 public:
-    Effect(Octopus const * octopus);
+    Effect(EffectController * controller);
     virtual ~Effect();
     
+    virtual void reset() = 0;
 	virtual void animate(long ticks) = 0;
-private:
-	Octopus * _octopus;
+    virtual void render() = 0;
+protected:
+    EffectController * controller_;
 };
 
 #endif // #ifndef EFFECT_H

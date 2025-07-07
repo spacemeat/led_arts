@@ -33,7 +33,7 @@ void show_leds()
 void setup()
 {
 	std::cout << "Starting..." << '\n';
-	display.set();
+	display.reset();
 
 	for (int i = 0; i < NumTentacles * 3 + 2; ++i)
 	{

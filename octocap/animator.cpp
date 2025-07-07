@@ -1,7 +1,7 @@
-#include "mistress.h"
+#include "octocap.h"
 
 
-CRGB frame_buffer[NumTracks * NumLedsPerTrack];
+CRGB frame_buffer[NumLedsInMantle + NumLedsInTentacles];
 
 Animator::Animator()
 {
@@ -10,7 +10,7 @@ Animator::Animator()
 void Animator::wait_for_frame()
 {
 	auto time = _time;
-	while (time - _prev_time < FramePeriod)
+	while (time - _prev_time < FramePeriodInMs)
 	{
 		time = millis();
 	}

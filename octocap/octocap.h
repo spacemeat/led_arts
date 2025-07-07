@@ -1,3 +1,6 @@
+#ifndef OCTOCAP_H
+#define OCTOCAP_H
+
 #ifdef ARDUINO
 #include <FastLED.h>
 
@@ -16,6 +19,7 @@ const int LED_S8 = 34;
 #include "system.h"
 #endif
 
+#include "octopus.h"
 
 /* For DOIT ESP32 DEVKIT V1   (ESP32-VROOM-32D 30-pin layout)
  * TODO: Rejigger this for 38-pin ESP32
@@ -38,73 +42,19 @@ const int LED_S8 = 34;
 
 // Hardware setup
 
-const long NumBands = 20;
-const long NumLedsPerBand = 20;
-const long NumLedsInMantle = NumBands * NumLedsPerBand;
 
-const long NumTentacles = 8;
-const long NumStripsPerTentacle = 1;
-const long NumLedsPerStrip = 60;
-const long NumLedsPerTentacle = NumStripsPerTentacle * NumLedsPerStrip;
-const long NumLedsInTentacles = NumTentacles * NumLedsPerTentacle;
+constexpr const unsigned char MaxPower = 255;
 
-const unsigned char max_power = 255;
-
-const long FramePeriodInMs = 1024 / 32;
+constexpr const long FramePeriodInMs = 1024 / 32;
+constexpr const long EffectTransitionDuration = 1024;
 
 extern CRGB frame_buffer[NumLedsInMantle + NumLedsInTentacles];
 
 // Data classes
 
-#ifndef ARDUINO
-#endif
-
-struct Tentacle
-{
-	Tentacle();
-	void set_tentacle_id(int tentacle_id);
-	void set();
-	void reset();
-	void animate(long ticks);
-	void render();
-
-	int _tentacle_id;
-	int _frame_buffer_start;
-};
-
-struct MantleBand
-{
-    MantleBand();
-	void set_band_id(int band_id);
-	void set();
-	void reset();
-	void animate(long ticks);
-	void render();
-
-    int _band_id;
-	int _frame_buffer_start;
-};
-
-class Effect;
-
-struct Octopus
-{
-    Octopus();
-	void set();
-	void reset();
-	void animate(long ticks);
-	void render();
-
-    MantleBand _mantleBands[NumBands];
-	Tentacle _tentacles[NumTentacles];
-    Effect * _previousEffect;
-    Effect * _currentEffect;
-};
-
 struct Display
 {
 	Display();
-	void set();
 	void reset();
 	void animate(long ticks);
 	void render();
@@ -133,3 +83,6 @@ private:
 
 extern Animator animator;
 
+
+#endif // #ifndef OCTOCAP_H
+//

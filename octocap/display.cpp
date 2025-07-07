@@ -5,18 +5,13 @@ Display::Display()
 {
 }
 
-void Display::set()
+void Display::reset()
 {
-    _octopus.set();
+    _octopus.reset();
 	for (unsigned int b = 0; b < sizeof(frame_buffer) / sizeof(frame_buffer[0]); ++b)
 	{
 		frame_buffer[b] = CRGB(0, 0, 0);
 	}
-}
-
-void Display::reset()
-{
-	set();
 }
 
 void Display::animate(long ticks)

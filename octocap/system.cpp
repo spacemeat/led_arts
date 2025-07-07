@@ -56,3 +56,17 @@ long millis()
 
 #endif
 
+CHSV makeRandomColor()
+{
+    return CHSV(random(256), 128 + random(128), 128 + random(128));
+}
+
+CHSV makeRandomColor(CHSV inContrastTo)
+{
+    int offsetAbs = 256 / 6 + random(256/12);
+    int posOrNeg = 1 - 2 * random(2);
+    return CHSV(((256 + inContrastTo.h + posOrNeg * offsetAbs) % 256),
+                128 + random(128),
+                255 - inContrastTo.v);
+}
+

@@ -9,11 +9,13 @@ compile = p.CompilePhase({
     'sources': [
         'animator.cpp',
         'display.cpp',
-        'rocket.cpp',
-        'splash.cpp',
+        'octopus.cpp',
+        'system.cpp',
         'terminal.cpp',
-        'track.cpp',
-        'system.cpp'
+        'effects/crawling_stripe.cpp',
+        'effects/effect.cpp',
+        'effects/effect_controller.cpp',
+        'effects/octopus_effect.cpp'
     ],
     'include_dirs': [
         '.',

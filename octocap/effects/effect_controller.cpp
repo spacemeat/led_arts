@@ -1,13 +1,30 @@
 #include "effect_controller.h"
 #include "effect.h"
 
-EffectController::EffectController(ObjectWithEffect * obj)
-: obj_(obj)
+#ifndef ARDUINO
+#include <ostream>
+#endif
+
+EffectController::EffectController()
 {
 }
 
 EffectController::~EffectController()
 {
+}
+
+void EffectController::set_object(ObjectWithEffect * obj)
+{
+    obj_ = obj;
+
+    _effectA = obj_->get_next_effect();
+    _effectA->reset();
+
+    _effectB = obj_->get_next_effect();
+    _effectB->reset();
+
+    _transitionTime = EffectTransitionDuration;
+    _blendFactor = 256;
 }
 
 void EffectController::set_next_effect()
@@ -50,8 +67,10 @@ void EffectController::animate(long ticks)
     }
 
     // animate effects
-    _effectA->animate(ticks);
-    _effectB->animate(ticks);
+    if (_effectA)
+        { _effectA->animate(ticks); }
+    if (_effectB)
+        { _effectB->animate(ticks); }
 }
 
 void EffectController::render()
@@ -63,8 +82,10 @@ void EffectController::render()
     }
     
     // render effects
-    _effectA->render();
-    _effectB->render();
+    if (_effectA)
+        { _effectA->render(); }
+    if (_effectB)
+        { _effectB->render(); }
 }
 
 void EffectController::set_pixel(Effect * effect, CRGB * pixel_addr, CHSV color)
@@ -99,7 +120,10 @@ void EffectController::set_pixel(Effect * effect, int pixel_idx, CHSV color)
     set_pixel(effect, frame_buffer + pixel_idx, color);
 }
 
-ObjectWithEffect::ObjectWithEffect()
-: effect_controller_(this)
+
+void EffectController::report()
 {
+    std::cout << "transition time: " << _transitionTime << "\n"
+              << "blend factor: " << _blendFactor << "\n";
 }
+

@@ -13,6 +13,8 @@ public:
 	void animate(long ticks) override;
     void render() override;
 
+    void report() const override;
+
 protected:
     int tentacleOffsets_[NumTentacles];
     int crawlingSpeed_; // in pixels / second

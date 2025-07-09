@@ -1,6 +1,9 @@
 #include "../octopus.h"
 #include "crawling_stripe.h"
 
+#ifndef ARDINO
+#include <ostream>
+#endif
 
 CrawlingStripe::CrawlingStripe(Octopus * octopus)
 : OctopusEffect(octopus)
@@ -61,5 +64,17 @@ void CrawlingStripe::render()
             controller_->set_pixel(this, idx, c);
         }
     }
+}
+
+void CrawlingStripe::report() const
+{
+	for (int i = 0; i < NumTentacles; ++i)
+    {
+        std::cout << "tentacle " << i << " offset: " << tentacleOffsets_[i] << "\n";
+    }
+
+    std::cout << "base color: " << baseColor_ << "\n";
+    std::cout << "stripe color: " << baseColor_ << "\n";
+    std::cout << "accent color: " << baseColor_ << "\n";
 }
 

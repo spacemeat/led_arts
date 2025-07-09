@@ -13,6 +13,8 @@ public:
     virtual void reset() = 0;
 	virtual void animate(long ticks) = 0;
     virtual void render() = 0;
+
+    virtual void report() const = 0;
 protected:
     EffectController * controller_;
 };

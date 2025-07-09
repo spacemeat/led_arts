@@ -1,7 +1,7 @@
 #include "octopus.h"
 #include "effects/crawling_stripe.h"
 
-Effect * octopus_effects[1];
+Effect * octopus_effects[2];
 
 Octopus::Octopus()
 {
@@ -15,6 +15,9 @@ Octopus::Octopus()
 	}
 
     octopus_effects[0] = new CrawlingStripe(this);
+    octopus_effects[1] = new CrawlingStripe(this);
+
+    effect_controller_.set_object(this);
 }
 
 Effect * Octopus::get_next_effect()

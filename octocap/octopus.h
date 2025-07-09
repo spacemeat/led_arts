@@ -3,7 +3,7 @@
 
 #include "effects/effect_controller.h"
 
-constexpr const long NumBands = 20;
+constexpr const long NumBands = 0;
 constexpr const long NumLedsPerBand = 20;
 constexpr const long NumLedsInMantle = NumBands * NumLedsPerBand;
 
@@ -38,9 +38,9 @@ public:
     Octopus();
     ~Octopus() override = default;
     Effect * get_next_effect() override;
-	void reset();
-	void animate(long ticks);
-	void render();
+	void reset() override;
+	void animate(long ticks) override;
+	void render() override;
 
 //protected:
     MantleBand _mantleBands[NumBands];

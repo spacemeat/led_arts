@@ -8,11 +8,14 @@ class OctopusEffect : public Effect
 {
 public:
     OctopusEffect(Octopus * octopus);
-    virtual ~OctopusEffect();
+    ~OctopusEffect() override;
     
-    virtual void reset() = 0;
-	virtual void animate(long ticks) = 0;
-    virtual void render() = 0;
+    void reset() override = 0;
+	void animate(long ticks) override = 0;
+    void render() override = 0;
+
+    void report() const override = 0;
+
 protected:
 	Octopus * octopus_;
 };

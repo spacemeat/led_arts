@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <time.h>
+#include <ostream>
 
 extern timespec boot_ts;
 
@@ -33,10 +34,13 @@ struct CHSV
 	u8 h = 0;
 	u8 s = 0;
 	u8 v = 0;
-};
 
-CHSV makeRandomColor();
-CHSV makeRandomColor(CHSV inContrastTo);
+    friend std::ostream & operator << (std::ostream & os, CHSV const & obj)
+    {
+        os << "hsv{" << static_cast<int>(obj.h) << ", " << static_cast<int>(obj.s) << ", " << static_cast<int>(obj.v) << "}      ";
+        return os;
+    }
+};
 
 struct CRGB
 {
@@ -96,9 +100,18 @@ struct CRGB
 	u8 r = 0;
 	u8 g = 0;
 	u8 b = 0;
+
+    friend std::ostream & operator << (std::ostream & os, CRGB const & obj)
+    {
+        os << "rgb{" << static_cast<int>(obj.r) << ", " << static_cast<int>(obj.g) << ", " << static_cast<int>(obj.b) << "}      ";
+        return os;
+    }
 };
 
 #endif // #ifndef ARDUINO
+
+CHSV makeRandomColor();
+CHSV makeRandomColor(CHSV inContrastTo);
 
 #endif
 

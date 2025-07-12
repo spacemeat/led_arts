@@ -28,6 +28,7 @@ public:
 
 private:
     ObjectWithEffect * obj_ = nullptr;
+    long _effectTime = 0;
     long _transitionTime = 0;
     int _blendFactor = 255;
     Effect * _effectA = nullptr;
@@ -39,7 +40,7 @@ class ObjectWithEffect
 public:
     ObjectWithEffect() = default;
     virtual ~ObjectWithEffect() = default;
-    virtual Effect * get_next_effect() = 0;
+    virtual Effect * get_next_effect(Effect * forbidden) = 0;
     EffectController * get_controller() { return &effect_controller_; }
 	virtual void reset() = 0;
 	virtual void animate(long ticks) = 0;

@@ -46,7 +46,6 @@ const int LED_S8 = 34;
 constexpr const unsigned char MaxPower = 255;
 
 constexpr const long FramePeriodInMs = 1024 / 32;
-constexpr const long EffectTransitionDuration = 1024;
 
 extern CRGB frame_buffer[NumLedsInMantle + NumLedsInTentacles];
 

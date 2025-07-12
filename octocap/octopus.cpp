@@ -20,9 +20,14 @@ Octopus::Octopus()
     effect_controller_.set_object(this);
 }
 
-Effect * Octopus::get_next_effect()
+Effect * Octopus::get_next_effect(Effect * forbidden)
 {
-    return octopus_effects[random(sizeof(octopus_effects) / sizeof(octopus_effects[0]))];
+    Effect * chosen = forbidden;
+    do
+    {
+        chosen = octopus_effects[random(sizeof(octopus_effects) / sizeof(octopus_effects[0]))];
+    } while (chosen == forbidden);
+    return chosen;
 }
 
 void Octopus::reset()

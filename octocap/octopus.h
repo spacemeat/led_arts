@@ -13,10 +13,17 @@ constexpr const long NumLedsPerStrip = 60;
 constexpr const long NumLedsPerTentacle = NumStripsPerTentacle * NumLedsPerStrip;
 constexpr const long NumLedsInTentacles = NumTentacles * NumLedsPerTentacle;
 
+constexpr const long EffectTransitionDuration = 1024;
+constexpr const long EffectDuration = 1024 * 10;
+
 struct Tentacle
 {
 	Tentacle() = default;
-	void set_tentacle_id(int tentacle_id) { _tentacle_id = tentacle_id; }
+	void set_tentacle_id(int tentacle_id)
+    {
+        _tentacle_id = tentacle_id;
+        _frame_buffer_start = tentacle_id * NumLedsPerTentacle;
+    }
 
 	int _tentacle_id = 0;
 	int _frame_buffer_start = 0;
@@ -37,7 +44,7 @@ class Octopus : public ObjectWithEffect
 public:
     Octopus();
     ~Octopus() override = default;
-    Effect * get_next_effect() override;
+    Effect * get_next_effect(Effect * forbidden) override;
 	void reset() override;
 	void animate(long ticks) override;
 	void render() override;

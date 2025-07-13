@@ -134,8 +134,8 @@ void EffectController::set_pixel(Effect * effect, int pixel_idx, CHSV color)
 
 void EffectController::report()
 {
-    std::cout << "transition time: " << _transitionTime << "   \n"
-              << "effect time: " << _effectTime << "   \n"
-              << "blend factor: " << _blendFactor << "   \n";
+    //std::cout << "transition time: " << _transitionTime << "   \n"
+    //          << "effect time: " << _effectTime << "   \n"
+    //          << "blend factor: " << _blendFactor << "   \n";
 }
 

@@ -5,7 +5,7 @@ import pyke as p
 compile = p.CompilePhase({
     'language': 'c++',
     'language_version': '20',
-    'src_dir': '.',
+    'src_dir': 'src',
     'sources': [
         'animator.cpp',
         'display.cpp',
@@ -18,7 +18,7 @@ compile = p.CompilePhase({
         'effects/octopus_effect.cpp'
     ],
     'include_dirs': [
-        '.',
+        'src',
     ]
 })
 

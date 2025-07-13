@@ -1,4 +1,6 @@
-#ifndef ARDUINO
+#ifdef ARDUINO
+#include <FastLED.h>
+#else
 
 #include "system.h"
 #include <chrono>

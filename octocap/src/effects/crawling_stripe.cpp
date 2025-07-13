@@ -1,7 +1,7 @@
 #include "../octopus.h"
 #include "crawling_stripe.h"
 
-#ifndef ARDINO
+#ifndef ARDUINO
 #include <ostream>
 #endif
 
@@ -69,13 +69,13 @@ void CrawlingStripe::render()
 
 void CrawlingStripe::report() const
 {
-	for (int i = 0; i < NumTentacles; ++i)
-    {
-        std::cout << "tentacle " << i << " offset: " << tentacleOffsets_[i] << "   \n";
-    }
+	//for (int i = 0; i < NumTentacles; ++i)
+    //{
+    //    std::cout << "tentacle " << i << " offset: " << tentacleOffsets_[i] << "   \n";
+    //}
 
-    std::cout << "base color: " << baseColor_ << "   \n";
-    std::cout << "stripe color: " << stripeColor_ << "   \n";
-    std::cout << "accent color: " << accentColor_ << "   \n";
+    //std::cout << "base color: " << baseColor_ << "   \n";
+    //std::cout << "stripe color: " << stripeColor_ << "   \n";
+    //std::cout << "accent color: " << accentColor_ << "   \n";
 }
 

@@ -1,7 +1,9 @@
 #ifndef MISTRESS_SYSTEM_H
 #define MISTRESS_SYSTEM_H
 
-#ifndef ARDUINO
+#ifdef ARDUINO
+#include <FastLED.h>
+#else
 
 #include <cstdint>
 #include <cstdlib>

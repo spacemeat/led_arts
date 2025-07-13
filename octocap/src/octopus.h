@@ -13,6 +13,8 @@ constexpr const long NumLedsPerStrip = 60;
 constexpr const long NumLedsPerTentacle = NumStripsPerTentacle * NumLedsPerStrip;
 constexpr const long NumLedsInTentacles = NumTentacles * NumLedsPerTentacle;
 
+constexpr const long NumLedsInOctopus = NumLedsInMantle + NumLedsPerTentacle;
+
 constexpr const long EffectTransitionDuration = 1024;
 constexpr const long EffectDuration = 1024 * 10;
 

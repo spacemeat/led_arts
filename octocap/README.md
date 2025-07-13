@@ -1,4 +1,4 @@
-# Mistress
+# Octohat
 
 I will wear this cephalopod like a hat.
 

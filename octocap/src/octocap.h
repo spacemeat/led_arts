@@ -10,8 +10,8 @@ const int LED_S3 = 26;
 const int LED_S4 = 25;
 const int LED_S5 = 33;
 const int LED_S6 = 32;
-const int LED_S7 = 35;
-const int LED_S8 = 34;
+const int LED_S7 = 23;
+const int LED_S8 = 12;
 
 #else
 #include <iostream>
@@ -22,12 +22,11 @@ const int LED_S8 = 34;
 #include "octopus.h"
 
 /* For DOIT ESP32 DEVKIT V1   (ESP32-VROOM-32D 30-pin layout)
- * TODO: Rejigger this for 38-pin ESP32
  * EN
  * SENSOR VP
  * SENSOR VN
- * 34
- * 35
+ * 34  - strip 8
+ * 36  - strip 7
  * 32  - strip 6
  * 33  - strip 5
  * 25  - strip 4
@@ -84,4 +83,4 @@ extern Animator animator;
 
 
 #endif // #ifndef OCTOCAP_H
-//
+

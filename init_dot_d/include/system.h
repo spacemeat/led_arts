@@ -9,16 +9,56 @@
 #include <cstdlib>
 #include <time.h>
 #include <ostream>
+#include <cmath>
 
 extern timespec boot_ts;
 
 using u8 = std::uint8_t;
 
-int abs(int v);
-int min(int a, int b);
-int max(int a, int b);
-int random(int n);
-int random(int n, int x);
+template<typename T>
+static inline T abs(T v)
+{
+	return v < T{0} ? -v : v;
+}
+
+template<typename T>
+static inline T min(T a, T b)
+{
+	return a < b ? a : b;
+}
+
+template<typename T>
+static inline T max(T a, T b)
+{
+	return a >= b ? a : b;
+}
+
+template<typename T>
+static inline T mod(T a, T b)
+{ }
+
+template<>
+inline int mod<int>(int a, int b)
+{
+    return a % b;
+}
+
+template<>
+inline float mod<float>(float a, float b)
+{
+    return fmod(a, b);
+}
+
+static inline int random(int n)
+{
+	return mod(rand(), n);
+}
+
+static inline int random(int n, int x)
+{
+	return mod(rand(), (x - n)) + n;
+}
+
 long millis();
 
 struct CHSV
@@ -58,30 +98,31 @@ struct CRGB
 	
 	CRGB(CHSV hsv)
 	{
+        float ht = float(hsv.h) / 255.0f * 6.0f;
 		float s = hsv.s / 255.0f;
 		float v = hsv.v / 255.0f;
 
 		float c = v * s;
-		float x = c * int(1 - abs((hsv.h / 6) % 2 - 1));
+		float x = c * (1.0f - abs(mod(ht, 2.0f) - 1.0f));
 		float m = v - c;
 
 		float fr = 0, fg = 0, fb = 0;
-		if (hsv.h < 256 / 6)
+		if (ht < 1.0f)
 			{ fr = c; fg = x; fb = 0; }
-		if (hsv.h >= 256 / 6 * 1 && hsv.h < 256 / 6 * 2)
+        else if (ht < 2.0f)
 			{ fr = x; fg = c; fb = 0; }
-		if (hsv.h >= 256 / 6 * 2 && hsv.h < 256 / 6 * 3)
+        else if (ht < 3.0f)
 			{ fr = 0; fg = c; fb = x; }
-		if (hsv.h >= 256 / 6 * 3 && hsv.h < 256 / 6 * 4)
+        else if (ht < 4.0f)
 			{ fr = 0; fg = x; fb = c; }
-		if (hsv.h >= 256 / 6 * 4 && hsv.h < 256 / 6 * 5)
+        else if (ht < 5.0f)
 			{ fr = x; fg = 0; fb = c; }
-		if (hsv.h >= 256 / 6 * 5)
+        else
 			{ fr = c; fg = 0; fb = x; }
 
-		r = (fr + m) * 255;
-		g = (fg + m) * 255;
-		b = (fb + m) * 255;
+		r = (fr + m) * 255.0f;
+		g = (fg + m) * 255.0f;
+		b = (fb + m) * 255.0f;
 	}
 
 	CRGB& operator +=(CRGB rhs)

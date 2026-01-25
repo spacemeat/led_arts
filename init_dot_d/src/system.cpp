@@ -5,30 +5,6 @@
 #include "system.h"
 #include <chrono>
 
-int abs(int v)
-{
-	return v < 0 ? -v : v;
-}
-
-int min(int a, int b)
-{
-	return a < b ? a : b;
-}
-
-int max(int a, int b)
-{
-	return a >= b ? a : b;
-}
-
-int random(int n)
-{
-	return rand() % n;
-}
-
-int random(int n, int x)
-{
-	return (rand() % (x - n)) + n;
-}
 
 class MilliClock
 {

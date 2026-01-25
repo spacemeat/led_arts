@@ -39,7 +39,7 @@ void Display::reset()
     mandel_board_.reset();
 }
 
-void Display::animate(long ticks)
+void Display::animate([[maybe_unused]] long ticks)
 {
     //text_board_8x16_.animate(ticks);
     mandel_board_.animate(ticks);

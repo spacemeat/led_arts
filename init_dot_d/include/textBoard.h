@@ -6,6 +6,30 @@
 #include "bitmaps.h"
 #include "colors.h"
 
+#define COLOR(bg, fg) ColorPair {static_cast<uint8_t>(Color::bg), static_cast<uint8_t>(Color::fg)}
+
+constexpr static const std::array<ColorPair, 8> failMsgColors = { {
+    COLOR(BLACK, WHITE),
+    COLOR(BLACK, RED),
+    COLOR(BLACK, RED),
+    COLOR(BLACK, RED),
+    COLOR(BLACK, RED),
+    COLOR(BLACK, RED),
+    COLOR(BLACK, RED),
+    COLOR(BLACK, WHITE)
+} };
+
+constexpr static const std::array<ColorPair, 8> okMsgColors { {
+    COLOR(BLACK, WHITE),
+    COLOR(BLACK, GREEN),
+    COLOR(BLACK, GREEN),
+    COLOR(BLACK, GREEN),
+    COLOR(BLACK, GREEN),
+    COLOR(BLACK, GREEN),
+    COLOR(BLACK, GREEN),
+    COLOR(BLACK, WHITE)
+} };
+
 struct TextCell
 {
     char ch_ = ' ';
@@ -14,35 +38,45 @@ struct TextCell
         .fg=static_cast<uint8_t>(Color::WHITE)};
 };
 
-template <int NumPixelsInCellCols, int NumPixelsInCellRows, 
-          int NumTileCols,         int NumTileRows, 
-          int NumPixelsInTileCols, int NumPixelsInTileRows>
-class TextBoard
+template <int NumPixelsInCellCols, int NumPixelsInCellRows>
+class TextBoard : public EffectBoard
 {
 public:
-    using PixelBoard = Board<NumTileCols, NumTileRows, NumPixelsInTileCols, NumPixelsInTileRows>;
+    TextBoard(PixelBoard & board) : EffectBoard{ &board, 3 * 1024 } { }
 
-    TextBoard(PixelBoard & board) : board_ { &board } { }
+    //constexpr static int get_cell_cols() { return NumPixelsInTileCols * NumTileCols / NumPixelsInCellCols; }
+    //constexpr static int get_cell_rows() { return NumPixelsInTileRows * NumTileRows / NumPixelsInCellRows; }
+    constexpr static int get_cell_cols() { return get_cols() / NumPixelsInCellCols; }
+    constexpr static int get_cell_rows() { return get_rows() / NumPixelsInCellRows; }
 
-    constexpr static int get_cols() { return NumPixelsInTileCols * NumTileCols / NumPixelsInCellCols; }
-    constexpr static int get_rows() { return NumPixelsInTileRows * NumTileRows / NumPixelsInCellRows; }
+    TextCell const & get_cell(int col, int row) const
+    { return cells_[row * get_cell_cols() + col]; }
 
-    TextCell const & get_cell(int col, int row) const { return cells_[row * get_cols() + col]; }
-    TextCell & get_cell(int col, int row) { return cells_[row * get_cols() + col]; }
+    TextCell & get_cell(int col, int row)
+    { return cells_[row * get_cell_cols() + col]; }
 
-    void reset()
+    void reset() override
     {
+        EffectBoard::reset();
+
         for (auto & cell : cells_)
         {
             cell = TextCell {};
         }
+
+        cursorCol_ = 0;
+        cursorRow_ = 0;
+
+        append_string("[FAILED]", failMsgColors);
+        append_string("[  OK  ]", okMsgColors);
+        append_string("[SALMON]", failMsgColors);
     }
 
     void set_cell(int col, int row, char ch, ColorPair colors)
     {
-        if (col >= get_cols() ||
-            row >= get_rows()) { return; }
-        cells_[row * get_cols() + col] = TextCell { .ch_ = ch, .colors_ = colors };
+        if (col >= get_cell_cols() ||
+            row >= get_cell_rows()) { return; }
+        cells_[row * get_cell_cols() + col] = TextCell { .ch_ = ch, .colors_ = colors };
     }
 
     void set_string(int col, int row, std::string_view str, std::span<ColorPair> colors)
@@ -54,13 +88,13 @@ public:
 
     void scroll(int num_rows)
     {
-        if (num_rows < get_rows())
+        if (num_rows < get_cell_rows())
         {
-            std::copy(cells_.begin() + get_cols() * num_rows, 
+            std::copy(cells_.begin() + get_cell_cols() * num_rows, 
                       cells_.end(),
                       cells_.begin());
         }
-        for (auto it = cells_.end() - get_cols() * num_rows; it != cells_.end(); ++it)
+        for (auto it = cells_.end() - get_cell_cols() * num_rows; it != cells_.end(); ++it)
         {
             *it = TextCell{};
         }
@@ -68,12 +102,12 @@ public:
         if (cursorRow_ < 0) { cursorRow_ = 0; cursorCol_ = 0; }
     }
 
-    void append_string(std::string_view str, std::span<ColorPair> colors)
+    void append_string(std::string_view str, std::span<ColorPair const> colors)
     {
         for(uint64_t idx = 0; idx < std::min(str.size(), colors.size()); ++idx)
         {
-            if (cursorCol_ >= get_cols()) { cursorCol_ = 0; cursorRow_ += 1; }
-            if (cursorRow_ >= get_rows()) { scroll(cursorRow_ - get_rows() + 1); }
+            if (cursorCol_ >= get_cell_cols()) { cursorCol_ = 0; cursorRow_ += 1; }
+            if (cursorRow_ >= get_cell_rows()) { scroll(cursorRow_ - get_rows() + 1); }
 
             set_cell(cursorCol_, cursorRow_, str[idx], colors[idx]);
             if (str[idx] == '\n') { cursorCol_ = 0; cursorRow_ += 1; }
@@ -81,17 +115,17 @@ public:
         }
     }
 
-    // 8x16
-    void animate([[maybe_unused]] long ticks)
+    void animate([[maybe_unused]] long ticks) override
     {
+        EffectBoard::animate(ticks);
     }
 
-    void render()
+    void render() override
     {
-        for (int chi = 0; chi < get_cols() * get_rows(); ++chi)
+        for (int chi = 0; chi < get_cell_cols() * get_cell_rows(); ++chi)
         {
-            int chr = chi / get_cols() * 16;
-            int chc = chi % get_cols() * 8;
+            int chr = chi / get_cell_cols() * 16;
+            int chc = chi % get_cell_cols() * 8;
             auto & textCell = cells_[chi];
             unsigned char * pbits = font8x16[static_cast<int>(textCell.ch_)];
             for (int br = 0; br < 16; ++br) {
@@ -103,16 +137,14 @@ public:
 
                     int pr = chr + br;
                     int pc = chc + bc;
-                    board_->get_pixel(pc, pr) = color;
+                    get_pixel(pc, pr) = color;
                 }
             }
         }
     }
 
 private:
-
-    PixelBoard * board_;
-    std::array<TextCell, get_cols() * get_rows()> cells_;
+    std::array<TextCell, get_cell_cols() * get_cell_rows()> cells_;
     int cursorCol_ {};
     int cursorRow_ {};
 };

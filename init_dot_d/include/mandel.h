@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <complex>
@@ -6,14 +5,9 @@
 
 #include "frame.h"
 
-template <int NumTilesPerBoardX,  int NumTilesPerBoardY, 
-          int NumPixelsPerTileX,  int NumPixelsPerTileY>
-class MandelBoard
+class MandelBoard : public EffectBoard
 {
     using Cx = std::complex<float>;
-
-    constexpr static int const NumPixelsPerBoardX = NumTilesPerBoardX * NumPixelsPerTileX;
-    constexpr static int const NumPixelsPerBoardY = NumTilesPerBoardY * NumPixelsPerTileY;
 
     constexpr static std::array interesting_ts = {
         Cx { -0.7012693643569946f, -0.3593555545806885f },
@@ -25,14 +19,14 @@ class MandelBoard
     };
 
 public:
-    using PixelBoard = Board<NumTilesPerBoardX, NumTilesPerBoardY, NumPixelsPerTileX, NumPixelsPerTileY>;
-
-    MandelBoard(PixelBoard & board) : board_ { &board } { }
+    MandelBoard(PixelBoard & board) : EffectBoard { &board } { }
 
     std::array<CRGB, 256> palette_ = {};
 
-    void reset()
+    void reset() override
     {
+        EffectBoard::reset();
+
         c0 = {-2.0f, 2.0f};
         c1 = {2.0f, -2.0f};
         t = interesting_ts[interesting_index_++];
@@ -58,27 +52,27 @@ public:
         }
     }
 
-    void animate([[maybe_unused]] long ticks)
+    void animate([[maybe_unused]] long ticks) override
     {
         // move c0 and c1 to t
         auto midpoint = (c0 + c1) / 2.0f;
         auto new_midpoint = midpoint + (t - midpoint) / 10.0f; // * static_cast<float>(ticks) / 32.0f;
         auto offset = (c1 - c0) / 2.02f;
-        if (std::abs(offset.real()) < 0.000008 || std::abs(offset.imag()) < 0.000008) { reset(); }
+        if (std::abs(offset.real()) < 0.000008 || std::abs(offset.imag()) < 0.000008) { stop(); }
         else {
             c0 = new_midpoint - offset;
             c1 = new_midpoint + offset;
         }
     }
 
-    void render()
+    void render() override
     {
         // This seems too slow to be > 1
         constexpr int antialias_factor = 1;
 
         auto d = (c1 - c0);
-        auto da = Cx { d.real() / float(NumPixelsPerBoardX * antialias_factor),
-                       d.imag() / float(NumPixelsPerBoardY * antialias_factor)};
+        auto da = Cx { d.real() / float(get_cols() * antialias_factor),
+                       d.imag() / float(get_rows() * antialias_factor)};
 
         for (int py = 0; py < NumPixelsPerBoardY; ++py)
         {
@@ -87,7 +81,7 @@ public:
             {
                 float cpx = float(px) / float(NumPixelsPerBoardX) * d.real() + c0.real();
                 Cx cp  = Cx { cpx, cpy };
-                auto & pixel = board_->get_pixel(px, py);
+                auto & pixel = get_pixel(px, py);
 
                 int accum {};
                 for (int ay = 0; ay < antialias_factor; ++ay)
@@ -125,7 +119,6 @@ public:
 
 
 //private:
-    PixelBoard * board_;
     std::complex<float> c0, c1;
     std::complex<float> t;
     int interesting_index_ {};

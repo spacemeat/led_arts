@@ -21,8 +21,8 @@ void report_effects()
 
 	std::cout << off
 			  << clear_line << "w: " << w << "; h: " << h << " t:" << animator.get_time() << '\n';
-    std::cout << clear_line << "c0: " << display.get_mandel_board().c0.real() << ", " << display.get_mandel_board().c0.imag() << "\n";
-    std::cout << clear_line << "c1: " << display.get_mandel_board().c1.real() << ", " << display.get_mandel_board().c1.imag() << "\n";
+    //std::cout << clear_line << "c0: " << display.get_mandel_board().c0.real() << ", " << display.get_mandel_board().c0.imag() << "\n";
+    //std::cout << clear_line << "c1: " << display.get_mandel_board().c1.real() << ", " << display.get_mandel_board().c1.imag() << "\n";
 }
 
 void show_leds()

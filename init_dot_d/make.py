@@ -9,7 +9,6 @@ compile = p.CompilePhase({
     'sources': [
         'animator.cpp',
         'bitmaps_8x16.cpp',
-        'board.cpp',
         'colors.cpp',
         'display.cpp',
         'system.cpp',

@@ -1,54 +1,37 @@
 #include "display.h"
 
-#define COLOR(bg, fg) ColorPair {static_cast<uint8_t>(Color::bg), static_cast<uint8_t>(Color::fg)}
+#include "textBoard.h"
+#include "mandel.h"
+#include "gol.h"
 
 Display::Display()
-: pixel_board_{}, text_board_8x16_{pixel_board_}, mandel_board_{pixel_board_}
+: pixel_board_{}, effect_boards_{
+    new TextBoard<8, 16> { pixel_board_ },
+    new MandelBoard { pixel_board_ },
+    new GolBoard { pixel_board_ } }
 {
 }
 
+
 void Display::reset()
 {
-    [[maybe_unused]] std::array<ColorPair, 8> failMsgColors = { {
-        COLOR(BLACK, WHITE),
-        COLOR(BLACK, RED),
-        COLOR(BLACK, RED),
-        COLOR(BLACK, RED),
-        COLOR(BLACK, RED),
-        COLOR(BLACK, RED),
-        COLOR(BLACK, RED),
-        COLOR(BLACK, WHITE)
-    } };
-
-    [[maybe_unused]] std::array<ColorPair, 8> okMsgColors { {
-        COLOR(BLACK, WHITE),
-        COLOR(BLACK, GREEN),
-        COLOR(BLACK, GREEN),
-        COLOR(BLACK, GREEN),
-        COLOR(BLACK, GREEN),
-        COLOR(BLACK, GREEN),
-        COLOR(BLACK, GREEN),
-        COLOR(BLACK, WHITE)
-    } };
-
     pixel_board_.reset();
-    text_board_8x16_.reset();
-    text_board_8x16_.append_string("[FAILED]", failMsgColors);
-    text_board_8x16_.append_string("[  OK  ]", okMsgColors);
-    text_board_8x16_.append_string("[SALMON]", failMsgColors);
-    mandel_board_.reset();
+    get_effect()->reset();
 }
 
 void Display::animate([[maybe_unused]] long ticks)
 {
-    //text_board_8x16_.animate(ticks);
-    mandel_board_.animate(ticks);
+    get_effect()->animate(ticks);
+    if (get_effect()->should_stop())
+    {
+        current_effect_ = (current_effect_ + 1) % effect_boards_.size();
+        get_effect()->reset();
+    }
 }
 
 void Display::render()
 {
-    //text_board_8x16_.render();
-    mandel_board_.render();
+    get_effect()->render();
 }
 
 Display display;

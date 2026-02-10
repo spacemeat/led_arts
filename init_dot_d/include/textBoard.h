@@ -66,10 +66,6 @@ public:
 
         cursorCol_ = 0;
         cursorRow_ = 0;
-
-        append_string("[FAILED]", failMsgColors);
-        append_string("[  OK  ]", okMsgColors);
-        append_string("[SALMON]", failMsgColors);
     }
 
     void set_cell(int col, int row, char ch, ColorPair colors)
@@ -107,7 +103,7 @@ public:
         for(uint64_t idx = 0; idx < std::min(str.size(), colors.size()); ++idx)
         {
             if (cursorCol_ >= get_cell_cols()) { cursorCol_ = 0; cursorRow_ += 1; }
-            if (cursorRow_ >= get_cell_rows()) { scroll(cursorRow_ - get_rows() + 1); }
+            if (cursorRow_ >= get_cell_rows()) { scroll(cursorRow_ - get_cell_rows() + 1); }
 
             set_cell(cursorCol_, cursorRow_, str[idx], colors[idx]);
             if (str[idx] == '\n') { cursorCol_ = 0; cursorRow_ += 1; }
@@ -118,7 +114,25 @@ public:
     void animate([[maybe_unused]] long ticks) override
     {
         EffectBoard::animate(ticks);
+
+        if (frame_number_++ == next_frame_number_)
+        {
+            frame_number_ = 0;
+            next_frame_number_ = random(32);
+            switch (random(10))
+            {
+            case 0:
+                append_string("[FAILED]", failMsgColors);
+                break;
+            default:
+                append_string("[  OK  ]", okMsgColors);
+                break;
+            }
+        }
     }
+
+    size_t frame_number_ = {};
+    size_t next_frame_number_ = random(32);
 
     void render() override
     {

@@ -1,9 +1,6 @@
-#ifndef MISTRESS_SYSTEM_H
-#define MISTRESS_SYSTEM_H
+#pragma once
 
-#ifdef ARDUINO
-#include <FastLED.h>
-#else
+#ifndef ARDUINO
 
 #include <cstdint>
 #include <cstdlib>
@@ -14,6 +11,9 @@
 extern timespec boot_ts;
 
 using u8 = std::uint8_t;
+
+extern int term_w;
+extern int term_h;
 
 template<typename T>
 static inline T abs(T v)
@@ -156,5 +156,6 @@ struct CRGB
 CHSV makeRandomColor();
 CHSV makeRandomColor(CHSV inContrastTo);
 
-#endif
+void setup_hardware();
+void present();
 

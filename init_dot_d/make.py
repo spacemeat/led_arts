@@ -11,8 +11,8 @@ compile = p.CompilePhase({
         'bitmaps_8x16.cpp',
         'colors.cpp',
         'display.cpp',
-        'system.cpp',
-        'terminal.cpp'
+        'system-linux_terminal.cpp',
+        'system.cpp'
     ],
     'include_dirs': [
         'include',
@@ -20,8 +20,12 @@ compile = p.CompilePhase({
 })
 
 link = p.LinkToExePhase({
-    'name': 'init_dot_d',
+    'name': 'init_dot_d-term',
 }, compile)
+
+#link = p.LinkToExePhase({
+#    'name': 'init_dot_d-arduino',
+#}, compile)
 
 p.get_main_phase().depend_on(link)
 

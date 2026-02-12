@@ -1,6 +1,7 @@
 #pragma once
 
 #include <span>
+#include <string_view>
 
 #include "frame.h"
 #include "bitmaps.h"
@@ -8,18 +9,11 @@
 
 #define COLOR(bg, fg) ColorPair {static_cast<uint8_t>(Color::bg), static_cast<uint8_t>(Color::fg)}
 
-constexpr static const std::array<ColorPair, 8> failMsgColors = { {
-    COLOR(BLACK, WHITE),
-    COLOR(BLACK, RED),
-    COLOR(BLACK, RED),
-    COLOR(BLACK, RED),
-    COLOR(BLACK, RED),
-    COLOR(BLACK, RED),
-    COLOR(BLACK, RED),
-    COLOR(BLACK, WHITE)
-} };
 
-constexpr static const std::array<ColorPair, 8> okMsgColors { {
+using Msg = std::pair<std::string_view, std::array<ColorPair, 8>>;
+
+constexpr static const Msg msg_Ok {
+    "[  OK  ]", {
     COLOR(BLACK, WHITE),
     COLOR(BLACK, GREEN),
     COLOR(BLACK, GREEN),
@@ -27,8 +21,114 @@ constexpr static const std::array<ColorPair, 8> okMsgColors { {
     COLOR(BLACK, GREEN),
     COLOR(BLACK, GREEN),
     COLOR(BLACK, GREEN),
-    COLOR(BLACK, WHITE)
-} };
+    COLOR(BLACK, WHITE) }
+};
+
+constexpr static const Msg msg_Failed {
+    "[FAILED]", {
+    COLOR(BLACK, WHITE),
+    COLOR(BLACK, RED),
+    COLOR(BLACK, RED),
+    COLOR(BLACK, RED),
+    COLOR(BLACK, RED),
+    COLOR(BLACK, RED),
+    COLOR(BLACK, RED),
+    COLOR(BLACK, WHITE) }
+};
+
+constexpr static const std::array msg_Eggs {
+    Msg { "[MOOPED]", {
+        COLOR(BLACK, WHITE),
+        COLOR(BLACK, BLUE),
+        COLOR(BLACK, BLUE),
+        COLOR(BLACK, BLUE),
+        COLOR(BLACK, BLUE),
+        COLOR(BLACK, BLUE),
+        COLOR(BLACK, BLUE),
+        COLOR(BLACK, WHITE) }
+    },
+    Msg { "[FOOBAR]", {
+        COLOR(BLACK, WHITE),
+        COLOR(BLACK, RED),
+        COLOR(BLACK, RED),
+        COLOR(BLACK, RED),
+        COLOR(BLACK, YELLOW),
+        COLOR(BLACK, YELLOW),
+        COLOR(BLACK, YELLOW),
+        COLOR(BLACK, WHITE) }
+    },
+    Msg { "[ELOPED]", {
+        COLOR(BLACK, WHITE),
+        COLOR(BLACK, GREEN),
+        COLOR(BLACK, GREEN),
+        COLOR(BLACK, GREEN),
+        COLOR(BLACK, GREEN),
+        COLOR(BLACK, GREEN),
+        COLOR(BLACK, GREEN),
+        COLOR(BLACK, WHITE) }
+    },
+    Msg { "[GOATED]", {
+        COLOR(BLACK, WHITE),
+        COLOR(BLACK, GREEN),
+        COLOR(BLACK, GREEN),
+        COLOR(BLACK, GREEN),
+        COLOR(BLACK, GREEN),
+        COLOR(BLACK, GREEN),
+        COLOR(BLACK, GREEN),
+        COLOR(BLACK, WHITE) }
+    },
+    Msg { "[HOHOHO]", {
+        COLOR(BLACK, WHITE),
+        COLOR(BLACK, LT_GREEN),
+        COLOR(BLACK, LT_GREEN),
+        COLOR(BLACK, LT_RED),
+        COLOR(BLACK, LT_RED),
+        COLOR(BLACK, LT_GREEN),
+        COLOR(BLACK, LT_GREEN),
+        COLOR(BLACK, WHITE) }
+    },
+    Msg { "[<3<3<3]", {
+        COLOR(BLACK, WHITE),
+        COLOR(BLACK, LT_RED),
+        COLOR(BLACK, LT_RED),
+        COLOR(BLACK, LT_MAGENTA),
+        COLOR(BLACK, LT_MAGENTA),
+        COLOR(BLACK, LT_BLUE),
+        COLOR(BLACK, LT_BLUE),
+        COLOR(BLACK, WHITE) }
+    },
+    Msg { "[MURICA]", {
+        COLOR(BLACK, WHITE),
+        COLOR(BLACK, LT_RED),
+        COLOR(BLACK, LT_WHITE),
+        COLOR(BLACK, LT_BLUE),
+        COLOR(BLACK, LT_RED),
+        COLOR(BLACK, LT_WHITE),
+        COLOR(BLACK, LT_BLUE),
+        COLOR(BLACK, WHITE) }
+    },
+    Msg { "[UNDEAD]", {
+        COLOR(BLACK, WHITE),
+        COLOR(BLACK, LT_BLACK),
+        COLOR(BLACK, LT_BLACK),
+        COLOR(BLACK, LT_BLACK),
+        COLOR(BLACK, LT_BLACK),
+        COLOR(BLACK, LT_BLACK),
+        COLOR(BLACK, LT_BLACK),
+        COLOR(BLACK, WHITE) }
+    },
+    Msg { "[DOOMED]", {
+        COLOR(BLACK, WHITE),
+        COLOR(LT_BLACK, RED),
+        COLOR(LT_BLACK, RED),
+        COLOR(LT_BLACK, RED),
+        COLOR(LT_BLACK, RED),
+        COLOR(LT_BLACK, RED),
+        COLOR(LT_BLACK, RED),
+        COLOR(BLACK, WHITE) }
+    },
+};
+
 
 struct TextCell
 {
@@ -42,7 +142,7 @@ template <int NumPixelsInCellCols, int NumPixelsInCellRows>
 class TextBoard : public EffectBoard
 {
 public:
-    TextBoard(PixelBoard & board) : EffectBoard{ &board, 3 * 1024 } { }
+    TextBoard(PixelBoard & board) : EffectBoard{ &board, 5 * 1024 } { }
 
     //constexpr static int get_cell_cols() { return NumPixelsInTileCols * NumTileCols / NumPixelsInCellCols; }
     //constexpr static int get_cell_rows() { return NumPixelsInTileRows * NumTileRows / NumPixelsInCellRows; }
@@ -119,14 +219,19 @@ public:
         {
             frame_number_ = 0;
             next_frame_number_ = random(32);
-            switch (random(10))
+            auto mode = random(100);
+            if (mode > 10)
             {
-            case 0:
-                append_string("[FAILED]", failMsgColors);
-                break;
-            default:
-                append_string("[  OK  ]", okMsgColors);
-                break;
+                append_string(msg_Ok.first, msg_Ok.second);
+            }
+            else if (mode > 1)
+            {
+                append_string(msg_Failed.first, msg_Failed.second);
+            }
+            else
+            {
+                auto const & msg = msg_Eggs[random(msg_Eggs.size())];
+                append_string(msg.first, msg.second);
             }
         }
     }

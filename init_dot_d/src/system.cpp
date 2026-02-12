@@ -1,10 +1,12 @@
-#ifdef ARDUINO
-#include <FastLED.h>
-#else
+#include "init_dot_d.h"
 
-#include "system.h"
+#ifndef ARDUINO
+
 #include <chrono>
+#include <signal.h>
 
+void setup();
+void loop();
 
 class MilliClock
 {
@@ -42,4 +44,55 @@ CHSV makeRandomColor(CHSV inContrastTo)
                 128 + random(128),
                 255 - inContrastTo.v);
 }
+
+void setup()
+{
+    setup_hardware();
+	display.reset();
+}
+
+void loop()
+{
+	animator.wait_for_frame();
+	animator.tick();
+	display.render();
+    present();
+}
+
+
+#ifndef ARDUINO
+
+void sigint_handler([[maybe_unused]] int sig)
+{
+    // cursor on, remove color formatting
+    std::cout << "\e[?25h\e[0m\e[48;2;0;0;0m" << std::endl;
+
+    signal(SIGINT, SIG_DFL);
+    raise(SIGINT);
+}
+
+int main(int argc, char* argv[])
+{
+    if (signal(SIGINT, sigint_handler) == SIG_ERR)
+    {
+        perror("signal");
+        return 1;
+    }
+
+	if (argc > 1)
+		{ term_w = atoi(argv[1]); }
+	if (argc > 2)
+		{ term_h = atoi(argv[2]); }
+
+	setup();
+
+	for(;;)
+	{
+        loop();
+	}
+
+	return 0;
+}
+
+#endif
 

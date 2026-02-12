@@ -19,7 +19,7 @@ enum class Color : uint8_t
     LT_BLUE,
     LT_MAGENTA,
     LT_CYAN,
-    LT_WHTIE
+    LT_WHITE
 };
 
 struct ColorPair

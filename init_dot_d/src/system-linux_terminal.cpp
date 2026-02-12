@@ -1,31 +1,34 @@
-#ifndef ARDUINO
+#ifndef __linux__
+#error This code unit must be compiled for a linux environment.
+#endif
 
 #include "init_dot_d.h"
 #include <iostream>
 
+constexpr auto cursor_off = "\e[?25l";
 constexpr auto off = "\e[0m\e[48;2;0;0;0m";
 constexpr auto clear_line = "\e[K";
 
 int term_w = 80;
 int term_h = 24;
-
 int skipLines = NumPixelsPerBoardY + 2;
 
-void report_effects()
+static void clear()
 {
     std::cout << off
 		      << "\e[" << skipLines << "A";
+}
 
+static void report_debug_info()
+{
 	int w = term_w;
 	int h = term_h;
 
 	std::cout << off
 			  << clear_line << "w: " << w << "; h: " << h << " t:" << animator.get_time() << '\n';
-    //std::cout << clear_line << "c0: " << display.get_mandel_board().c0.real() << ", " << display.get_mandel_board().c0.imag() << "\n";
-    //std::cout << clear_line << "c1: " << display.get_mandel_board().c1.real() << ", " << display.get_mandel_board().c1.imag() << "\n";
 }
 
-void show_leds()
+static void show_leds()
 {
     auto & pixel_board = display.get_pixel_board();
     for (int py = 0; py < NumPixelsPerBoardY; py += 2)
@@ -44,42 +47,20 @@ void show_leds()
     }
 }
 
-void setup()
+void setup_hardware()
 {
-	std::cout << "Starting..." << '\n';
-	display.reset();
-
-    //display.get_board().report();
-
+	std::cout << cursor_off << "Starting..." << '\n';
 	for (int i = 0; i < skipLines; ++i)
 	{
-		std::cout << '\n';
+        std::cout << '\n';
 	}
 }
 
-void loop()
+void present()
 {
-	animator.wait_for_frame();
-	animator.tick();
-	display.render();
-    report_effects();
+    clear();
+    report_debug_info();
 	show_leds();
 }
 
-int main(int argc, char* argv[])
-{
-	if (argc > 1)
-		{ term_w = atoi(argv[1]); }
-	if (argc > 2)
-		{ term_h = atoi(argv[2]); }
 
-	setup();
-
-	for(;;)
-	{
-        loop();
-	}
-
-	return 0;
-}
-#endif

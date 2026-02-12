@@ -27,6 +27,33 @@ public:
 
     size_t current_board_index_ = {};
 
+    void draw_square(CellState state, size_t left, size_t top, size_t w, size_t h)
+    {
+        if (left + w > get_cols() ||
+            top + h > get_rows())
+        {
+            return;
+        }
+
+        auto & cells = board_history_[current_board_index_];
+        for (auto y = top; y < top + h; ++y)
+        {
+            if (y == top || y == top + h - 1)
+            {
+                for (auto x = left; x < left + w; ++x)
+                {
+                    size_t i = y * get_rows() + x;
+                    cells[i] = state;
+                }
+            }
+            else
+            {
+                cells[y * get_rows() + left] = state;
+                cells[y * get_rows() + left + w - 1] = state;
+            }
+        }
+    }
+
     void reset() override
     {
         EffectBoard::reset();
@@ -46,22 +73,34 @@ public:
             for (size_t i = 0; i < cells.size(); ++i) {
                 auto r = random(20);
                 cells[i] = r & 1 ? CellState::Volatile
-                                 : CellState::Empty; }
+                                 : CellState::Empty;
+            }
             break;
         case 1:
             for (size_t i = 0; i < cells.size(); ++i) {
-                auto r = random(60);
-                cells[i] = r > 0 ? ((r & 1) ? CellState::Volatile
-                                            : CellState::Empty)
-                                 : CellState::Source; }
+                auto r = random(20);
+                cells[i] = r & 1 ? CellState::Volatile
+                                 : CellState::Empty;
+            }
+            for (size_t i = 0; i < size_t(random(4)); ++i) {
+                    size_t x = random(get_cols());
+                    size_t y = random(get_rows());
+                    draw_square(CellState::Source, 
+                                x, y, random(get_cols() - x), random(get_rows() - y));
+            }
             break;
         case 2:
             for (size_t i = 0; i < cells.size(); ++i) {
-                auto r = random(120);
-                cells[i] = r > 1 ? ((r & 1) ? CellState::Volatile
-                                            : CellState::Empty)
-                                  : (r ? CellState::Source 
-                                       : CellState::Sink); }
+                auto r = random(20);
+                cells[i] = r & 1 ? CellState::Volatile
+                                 : CellState::Empty;
+            }
+            for (size_t i = 0; i < size_t(random(4)); ++i) {
+                    size_t x = random(get_cols());
+                    size_t y = random(get_rows());
+                    draw_square(i % 4 ? CellState::Source : CellState::Sink, 
+                                x, y, random(get_cols() - x), random(get_rows() - y));
+            }
             break;
         }
 

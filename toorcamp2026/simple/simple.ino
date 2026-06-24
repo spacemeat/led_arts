@@ -40,5 +40,5 @@ void loop()
   // CRGB color values.
   animate_strip();
   // This drives the frame_buffer onto the LED strip.
- 	FastLED.show();
+  FastLED.show();
 }

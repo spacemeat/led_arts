@@ -13,6 +13,7 @@ const int LEDS_PER_STRIP = LEDS_PER_METER * METERS_PER_STRIP;
 CRGB frame_buffer[LEDS_PER_STRIP];
 
 int starting_led_idx = 0;
+int value = 0;
 
 // This is called once when the board powers on.
 void setup()
@@ -33,6 +34,8 @@ void animate_strip()
   
   // Every frame, we're starting at the next pixel.
   starting_led_idx += 1;
+  value += 1;
+  value %= 255;
   // Loop! For each pixel.
   for (int led_idx = 0; led_idx < LEDS_PER_STRIP; ++led_idx)
   {
@@ -44,7 +47,7 @@ void animate_strip()
     //              ^^^ = Color on the color wheel: red->yellow->green->cyan->blue->magenta
     //                   ^^^^^^^^^^ = How colorful: from gray to full color
     //                               ^^^^^ = How dark: black to full brightness
-    CHSV hsv { max(255, led_idx), 255, max(0, min(127, led_idx - 127)) };
+    CHSV hsv { 255, 255, value };
     // Set the color to the buffer. That's the LED's color when it gets banged out.
     frame_buffer[computed_led_idx] = hsv;
   }
